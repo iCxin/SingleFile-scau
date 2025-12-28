@@ -37,6 +37,7 @@ app.get('/', (req, res) => {
             if (match) {
                 return {
                     filename: file,
+                    encodedFilename: encodeURIComponent(file),
                     date: match[1],
                     time: `${match[2]}:${match[3]}:${match[4]}`,
                     title: match[5],
@@ -46,6 +47,7 @@ app.get('/', (req, res) => {
                 // Fallback for files that don't match the pattern
                 return {
                     filename: file,
+                    encodedFilename: encodeURIComponent(file),
                     date: 'Unknown',
                     time: 'Unknown',
                     title: file,

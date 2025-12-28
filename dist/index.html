@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网页存档索引</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        
+        /* Search and Controls */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 12px 15px;
+            padding-left: 40px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s;
+            box-sizing: border-box;
+        }
+        .search-box input:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.2);
+        }
+        .search-box::before {
+            content: "🔍";
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 14px;
+        }
+        .count-info {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e1e1e1;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.2s;
+        }
+        th:hover {
+            background-color: #e9ecef;
+        }
+        th.sort-asc::after {
+            content: " ▲";
+            display: inline-block;
+            margin-left: 5px;
+            font-size: 0.8em;
+            color: #3498db;
+        }
+        th.sort-desc::after {
+            content: " ▼";
+            display: inline-block;
+            margin-left: 5px;
+            font-size: 0.8em;
+            color: #3498db;
+        }
+        tr:hover {
+            background-color: #f1f3f5;
+        }
+        a {
+            text-decoration: none;
+            color: #3498db;
+            font-weight: 500;
+            transition: color 0.2s;
+            display: block;
+        }
+        a:hover {
+            color: #2980b9;
+            text-decoration: underline;
+        }
+        
+        .datetime-col {
+            width: 200px;
+            color: #7f8c8d;
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+        }
+        .title-col {
+            /* Takes remaining space */
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+            background: #f9f9f9;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>网页存档索引</h1>
+        
+        <div class="controls">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="搜索标题、日期或时间..." oninput="handleSearch()">
+            </div>
+            <div class="count-info" id="countInfo">
+                共 8 个文件
+            </div>
+        </div>
+
+        <table id="fileTable">
+            <thead>
+                <tr>
+                    <th class="datetime-col" onclick="handleSort('timestamp')">日期时间</th>
+                    <th class="title-col" onclick="handleSort('title')">标题</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <!-- Content will be populated by JS -->
+            </tbody>
+        </table>
+        
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <p>没有找到匹配的文件。</p>
+        </div>
+    </div>
+
+    <script>
+        // Data from server
+        let filesData = [{"filename":"2025-12-28-00-12-50-关于2026年大学生寒假回访母校招生宣传专项实践队伍审核结果的公示.html","date":"2025-12-28","time":"00:12:50","title":"关于2026年大学生寒假回访母校招生宣传专项实践队伍审核结果的公示","timestamp":1766851970000,"sizeMB":0.5604963302612305,"excluded":false},{"filename":"2025-12-22-16-25-32-办学数据.html","date":"2025-12-22","time":"16:25:32","title":"办学数据","timestamp":1766391932000,"sizeMB":34.012370109558105,"excluded":true},{"filename":"2025-12-21-23-39-15-关于我校2025年度大学生创新训练计划项目结题验收结果的公示.html","date":"2025-12-21","time":"23:39:15","title":"关于我校2025年度大学生创新训练计划项目结题验收结果的公示","timestamp":1766331555000,"sizeMB":32.41138935089111,"excluded":true},{"filename":"2025-12-21-20-20-17-水利与土木工程学院关于给予李煜等29名学生通报批评的决定.html","date":"2025-12-21","time":"20:20:17","title":"水利与土木工程学院关于给予李煜等29名学生通报批评的决定","timestamp":1766319617000,"sizeMB":0.4879884719848633,"excluded":false},{"filename":"2025-12-21-20-13-36-关于2025年“丁颖杯”大学生创业计划竞赛院内选拔赛评选结果的公示.html","date":"2025-12-21","time":"20:13:36","title":"关于2025年“丁颖杯”大学生创业计划竞赛院内选拔赛评选结果的公示","timestamp":1766319216000,"sizeMB":0.44828319549560547,"excluded":false},{"filename":"2025-12-21-20-12-29-关于2025年大学生创新创业训练计划项目结题答辩结果的公示.html","date":"2025-12-21","time":"20:12:29","title":"关于2025年大学生创新创业训练计划项目结题答辩结果的公示","timestamp":1766319149000,"sizeMB":0.6511125564575195,"excluded":false},{"filename":"2025-12-21-20-11-56-关于钟锦宇（等）同志拟吸收为中共预备党员的公示.html","date":"2025-12-21","time":"20:11:56","title":"关于钟锦宇（等）同志拟吸收为中共预备党员的公示","timestamp":1766319116000,"sizeMB":0.629176139831543,"excluded":false},{"filename":"2025-12-21-20-11-11-关于许湛琦等33名入团积极分子拟确定为入团发展对象的公示.html","date":"2025-12-21","time":"20:11:11","title":"关于许湛琦等33名入团积极分子拟确定为入团发展对象的公示","timestamp":1766319071000,"sizeMB":0.47658252716064453,"excluded":false}];
+        let currentSort = { field: 'timestamp', direction: 'desc' }; // Default sort
+        
+        const tableBody = document.getElementById('tableBody');
+        const emptyState = document.getElementById('emptyState');
+        const countInfo = document.getElementById('countInfo');
+        const headers = document.querySelectorAll('th');
+
+        function renderTable(data) {
+            tableBody.innerHTML = '';
+            
+            if (data.length === 0) {
+                document.getElementById('fileTable').style.display = 'none';
+                emptyState.style.display = 'block';
+                // Only update count text if it's a search result empty state, 
+                // but usually we want to show "0 matches" or similar.
+                // Here we stick to showing total count in header or filtered count?
+                // Let's show filtered count.
+                countInfo.textContent = `找到 0 个文件`;
+                return;
+            }
+            
+            document.getElementById('fileTable').style.display = 'table';
+            emptyState.style.display = 'none';
+            countInfo.textContent = `共 ${data.length} 个文件`;
+
+            data.forEach(file => {
+                const tr = document.createElement('tr');
+                
+                const tdDate = document.createElement('td');
+                tdDate.className = 'datetime-col';
+                // Format: YYYY-MM-DD HH:mm:ss
+                tdDate.textContent = `${file.date} ${file.time}`;
+                
+                const tdTitle = document.createElement('td');
+                tdTitle.className = 'title-col';
+                
+                if (file.excluded) {
+                    const span = document.createElement('span');
+                    span.textContent = `${file.title} (文件过大，无法预览)`;
+                    span.style.color = '#95a5a6';
+                    span.style.fontStyle = 'italic';
+                    tdTitle.appendChild(span);
+                } else {
+                    const a = document.createElement('a');
+                    a.href = `./HTML/${file.filename}`; // Use relative path for static site
+                    a.target = '_blank';
+                    a.textContent = file.title;
+                    tdTitle.appendChild(a);
+                }
+                
+                tr.appendChild(tdDate);
+                tr.appendChild(tdTitle);
+                tableBody.appendChild(tr);
+            });
+        }
+
+        function handleSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            
+            // Filter data
+            const filtered = filesData.filter(file => {
+                const searchStr = `${file.date} ${file.time} ${file.title}`.toLowerCase();
+                return searchStr.includes(query);
+            });
+            
+            // Apply current sort to filtered results
+            sortData(filtered, currentSort.field, currentSort.direction);
+        }
+
+        function handleSort(field) {
+            // Toggle direction if same field, otherwise default to desc for timestamp, asc for title
+            if (currentSort.field === field) {
+                currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSort.field = field;
+                // Default directions
+                currentSort.direction = field === 'timestamp' ? 'desc' : 'asc';
+            }
+
+            updateSortIndicators(field, currentSort.direction);
+
+            // Re-run filter to get current dataset
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const filtered = filesData.filter(file => {
+                const searchStr = `${file.date} ${file.time} ${file.title}`.toLowerCase();
+                return searchStr.includes(query);
+            });
+            
+            sortData(filtered, field, currentSort.direction);
+        }
+
+        function updateSortIndicators(activeField, direction) {
+            headers.forEach(th => {
+                th.classList.remove('sort-asc', 'sort-desc');
+                const onClick = th.getAttribute('onclick');
+                if (onClick && onClick.includes(`'${activeField}'`)) {
+                    th.classList.add(`sort-${direction}`);
+                }
+            });
+        }
+
+        function sortData(data, field, direction) {
+            data.sort((a, b) => {
+                let valA = a[field];
+                let valB = b[field];
+                
+                if (typeof valA === 'string') valA = valA.toLowerCase();
+                if (typeof valB === 'string') valB = valB.toLowerCase();
+
+                if (valA < valB) return direction === 'asc' ? -1 : 1;
+                if (valA > valB) return direction === 'asc' ? 1 : -1;
+                return 0;
+            });
+            renderTable(data);
+        }
+
+        // Initial Setup
+        // Mark the default sort column
+        updateSortIndicators('timestamp', 'desc');
+        // Render initial data
+        renderTable(filesData);
+    </script>
+</body>
+</html>
