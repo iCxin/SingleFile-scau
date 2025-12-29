@@ -4,216 +4,305 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>网页存档索引</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-color: #f3f4f6;
+            --text-color: #1f2937;
+            --text-secondary: #6b7280;
+            --border-color: #e5e7eb;
+            --card-bg: #ffffff;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f5f7fa;
-            color: #333;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             margin: 0;
             padding: 20px;
+            line-height: 1.5;
         }
+
         .container {
             max-width: 1000px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin: 40px auto;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
         }
+
+        .header {
+            padding: 32px 40px;
+            border-bottom: 1px solid var(--border-color);
+            background: linear-gradient(to right, #ffffff, #f9fafb);
+        }
+
         h1 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 20px;
+            margin: 0;
+            color: #111827;
+            font-size: 1.5rem;
+            font-weight: 600;
         }
+
+        .subtitle {
+            margin-top: 8px;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
         .controls {
+            padding: 24px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 16px;
+            background-color: #ffffff;
         }
-        .search-box {
+
+        .search-wrapper {
+            position: relative;
             flex-grow: 1;
             max-width: 400px;
-            position: relative;
         }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            pointer-events: none;
+        }
+
         .search-box input {
             width: 100%;
-            padding: 10px 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 1rem;
-            box-sizing: border-box; /* Ensure padding doesn't affect width */
-        }
-        .search-box input:focus {
+            padding: 10px 16px 10px 40px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            transition: all 0.2s;
             outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+            color: var(--text-color);
+            background-color: #f9fafb;
         }
+
+        .search-box input:focus {
+            background-color: #fff;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .stats {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            background-color: #f3f4f6;
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
-        }
-        th, td {
-            padding: 12px 15px;
             text-align: left;
-            border-bottom: 1px solid #e1e1e1;
         }
+
         th {
-            background-color: #f8f9fa;
-            font-weight: 600;
-            color: #555;
+            padding: 16px 24px;
+            background-color: #f9fafb;
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.75rem;
             text-transform: uppercase;
-            font-size: 0.85rem;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.05em;
             cursor: pointer;
             user-select: none;
+            border-bottom: 1px solid var(--border-color);
             transition: background-color 0.2s;
         }
+
         th:hover {
-            background-color: #e9ecef;
+            background-color: #f3f4f6;
+            color: #374151;
         }
-        th.sorted-asc::after {
-            content: " ▲";
-            font-size: 0.8em;
+
+        th.sorted-asc::after { content: " ↑"; color: var(--primary-color); }
+        th.sorted-desc::after { content: " ↓"; color: var(--primary-color); }
+
+        td {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.875rem;
         }
-        th.sorted-desc::after {
-            content: " ▼";
-            font-size: 0.8em;
+
+        tr:last-child td {
+            border-bottom: none;
         }
-        tr:hover {
-            background-color: #f1f3f5;
+
+        tr:hover td {
+            background-color: #f9fafb;
         }
-        a {
-            text-decoration: none;
-            color: #3498db;
-            font-weight: 500;
-            transition: color 0.2s;
-            display: block; /* Make the whole cell clickable area for the link text */
-        }
-        a:hover {
-            color: #2980b9;
-            text-decoration: underline;
-        }
+
         .datetime-col {
-            width: 180px;
-            color: #7f8c8d;
+            width: 200px;
+            color: var(--text-secondary);
             font-variant-numeric: tabular-nums;
             white-space: nowrap;
         }
-        .title-col {
-            /* Takes remaining space */
+
+        .title-link {
+            text-decoration: none;
+            color: #111827;
+            font-weight: 500;
+            display: block;
+            transition: color 0.2s;
         }
+
+        .title-link:hover {
+            color: var(--primary-color);
+        }
+
         .empty-state {
             text-align: center;
-            padding: 40px;
-            color: #7f8c8d;
+            padding: 60px 20px;
+            color: var(--text-secondary);
         }
-        .hidden {
-            display: none;
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            display: block;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 640px) {
+            body { padding: 10px; }
+            .container { margin: 10px auto; }
+            .header, .controls { padding: 20px; }
+            th, td { padding: 12px 16px; }
+            .datetime-col { width: auto; font-size: 0.75rem; display: block; padding-bottom: 4px; border-bottom: none; }
+            td.title-col { padding-top: 4px; display: block; border-top: none; }
+            tr { border-bottom: 1px solid var(--border-color); }
+            thead { display: none; } /* Hide headers on mobile for card-like view */
+            td { border: none; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>网页存档索引</h1>
+        <div class="header">
+            <h1>网页存档索引</h1>
+            <div class="subtitle">自动归档与检索系统</div>
+        </div>
         
         <div class="controls">
-            <div class="search-box">
+            <div class="search-wrapper search-box">
+                <svg class="search-icon" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 <input type="text" id="searchInput" placeholder="搜索标题或日期..." onkeyup="filterTable()">
             </div>
-            <div style="color: #7f8c8d; font-size: 0.9rem;">
+            <div class="stats">
                 共 <span id="fileCount">8</span> 个文件
             </div>
         </div>
 
-        
-            <table id="fileTable">
-                <thead>
-                    <tr>
-                        <th class="datetime-col" onclick="sortTable(0)">日期 / 时间</th>
-                        <th class="title-col" onclick="sortTable(1)">标题</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    
+        <div class="table-container">
+            
+                <table id="fileTable">
+                    <thead>
                         <tr>
-                            <td class="datetime-col" data-timestamp="1766851970000">
-                                2025-12-28 00:12:50
-                            </td>
-                            <td class="title-col">
-                                <a href="HTML/2025-12-28-00-12-50-%E5%85%B3%E4%BA%8E2026%E5%B9%B4%E5%A4%A7%E5%AD%A6%E7%94%9F%E5%AF%92%E5%81%87%E5%9B%9E%E8%AE%BF%E6%AF%8D%E6%A0%A1%E6%8B%9B%E7%94%9F%E5%AE%A3%E4%BC%A0%E4%B8%93%E9%A1%B9%E5%AE%9E%E8%B7%B5%E9%98%9F%E4%BC%8D%E5%AE%A1%E6%A0%B8%E7%BB%93%E6%9E%9C%E7%9A%84%E5%85%AC%E7%A4%BA.html" target="_blank">关于2026年大学生寒假回访母校招生宣传专项实践队伍审核结果的公示</a>
-                            </td>
+                            <th class="datetime-col" onclick="sortTable(0)">日期 / 时间</th>
+                            <th class="title-col" onclick="sortTable(1)">标题</th>
                         </tr>
-                    
-                        <tr>
-                            <td class="datetime-col" data-timestamp="1766391932000">
-                                2025-12-22 16:25:32
-                            </td>
-                            <td class="title-col">
-                                <a href="HTML/2025-12-22-16-25-32-%E5%8A%9E%E5%AD%A6%E6%95%B0%E6%8D%AE.html" target="_blank">办学数据</a>
-                            </td>
-                        </tr>
-                    
-                        <tr>
-                            <td class="datetime-col" data-timestamp="1766331555000">
-                                2025-12-21 23:39:15
-                            </td>
-                            <td class="title-col">
-                                <a href="HTML/2025-12-21-23-39-15-%E5%85%B3%E4%BA%8E%E6%88%91%E6%A0%A12025%E5%B9%B4%E5%BA%A6%E5%A4%A7%E5%AD%A6%E7%94%9F%E5%88%9B%E6%96%B0%E8%AE%AD%E7%BB%83%E8%AE%A1%E5%88%92%E9%A1%B9%E7%9B%AE%E7%BB%93%E9%A2%98%E9%AA%8C%E6%94%B6%E7%BB%93%E6%9E%9C%E7%9A%84%E5%85%AC%E7%A4%BA.html" target="_blank">关于我校2025年度大学生创新训练计划项目结题验收结果的公示</a>
-                            </td>
-                        </tr>
-                    
-                        <tr>
-                            <td class="datetime-col" data-timestamp="1766319617000">
-                                2025-12-21 20:20:17
-                            </td>
-                            <td class="title-col">
-                                <a href="HTML/2025-12-21-20-20-17-%E6%B0%B4%E5%88%A9%E4%B8%8E%E5%9C%9F%E6%9C%A8%E5%B7%A5%E7%A8%8B%E5%AD%A6%E9%99%A2%E5%85%B3%E4%BA%8E%E7%BB%99%E4%BA%88%E6%9D%8E%E7%85%9C%E7%AD%8929%E5%90%8D%E5%AD%A6%E7%94%9F%E9%80%9A%E6%8A%A5%E6%89%B9%E8%AF%84%E7%9A%84%E5%86%B3%E5%AE%9A.html" target="_blank">水利与土木工程学院关于给予李煜等29名学生通报批评的决定</a>
-                            </td>
-                        </tr>
-                    
-                        <tr>
-                            <td class="datetime-col" data-timestamp="1766319216000">
-                                2025-12-21 20:13:36
-                            </td>
-                            <td class="title-col">
-                                <a href="HTML/2025-12-21-20-13-36-%E5%85%B3%E4%BA%8E2025%E5%B9%B4%E2%80%9C%E4%B8%81%E9%A2%96%E6%9D%AF%E2%80%9D%E5%A4%A7%E5%AD%A6%E7%94%9F%E5%88%9B%E4%B8%9A%E8%AE%A1%E5%88%92%E7%AB%9E%E8%B5%9B%E9%99%A2%E5%86%85%E9%80%89%E6%8B%94%E8%B5%9B%E8%AF%84%E9%80%89%E7%BB%93%E6%9E%9C%E7%9A%84%E5%85%AC%E7%A4%BA.html" target="_blank">关于2025年“丁颖杯”大学生创业计划竞赛院内选拔赛评选结果的公示</a>
-                            </td>
-                        </tr>
-                    
-                        <tr>
-                            <td class="datetime-col" data-timestamp="1766319149000">
-                                2025-12-21 20:12:29
-                            </td>
-                            <td class="title-col">
-                                <a href="HTML/2025-12-21-20-12-29-%E5%85%B3%E4%BA%8E2025%E5%B9%B4%E5%A4%A7%E5%AD%A6%E7%94%9F%E5%88%9B%E6%96%B0%E5%88%9B%E4%B8%9A%E8%AE%AD%E7%BB%83%E8%AE%A1%E5%88%92%E9%A1%B9%E7%9B%AE%E7%BB%93%E9%A2%98%E7%AD%94%E8%BE%A9%E7%BB%93%E6%9E%9C%E7%9A%84%E5%85%AC%E7%A4%BA.html" target="_blank">关于2025年大学生创新创业训练计划项目结题答辩结果的公示</a>
-                            </td>
-                        </tr>
-                    
-                        <tr>
-                            <td class="datetime-col" data-timestamp="1766319116000">
-                                2025-12-21 20:11:56
-                            </td>
-                            <td class="title-col">
-                                <a href="HTML/2025-12-21-20-11-56-%E5%85%B3%E4%BA%8E%E9%92%9F%E9%94%A6%E5%AE%87%EF%BC%88%E7%AD%89%EF%BC%89%E5%90%8C%E5%BF%97%E6%8B%9F%E5%90%B8%E6%94%B6%E4%B8%BA%E4%B8%AD%E5%85%B1%E9%A2%84%E5%A4%87%E5%85%9A%E5%91%98%E7%9A%84%E5%85%AC%E7%A4%BA.html" target="_blank">关于钟锦宇（等）同志拟吸收为中共预备党员的公示</a>
-                            </td>
-                        </tr>
-                    
-                        <tr>
-                            <td class="datetime-col" data-timestamp="1766319071000">
-                                2025-12-21 20:11:11
-                            </td>
-                            <td class="title-col">
-                                <a href="HTML/2025-12-21-20-11-11-%E5%85%B3%E4%BA%8E%E8%AE%B8%E6%B9%9B%E7%90%A6%E7%AD%8933%E5%90%8D%E5%85%A5%E5%9B%A2%E7%A7%AF%E6%9E%81%E5%88%86%E5%AD%90%E6%8B%9F%E7%A1%AE%E5%AE%9A%E4%B8%BA%E5%85%A5%E5%9B%A2%E5%8F%91%E5%B1%95%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%85%AC%E7%A4%BA.html" target="_blank">关于许湛琦等33名入团积极分子拟确定为入团发展对象的公示</a>
-                            </td>
-                        </tr>
-                    
-                </tbody>
-            </table>
-        
+                    </thead>
+                    <tbody>
+                        
+                            <tr>
+                                <td class="datetime-col" data-timestamp="1766851970000">
+                                    2025-12-28 <span style="opacity: 0.6; margin-left: 4px;">00:12:50</span>
+                                </td>
+                                <td class="title-col">
+                                    <a href="HTML/2025-12-28-00-12-50-%E5%85%B3%E4%BA%8E2026%E5%B9%B4%E5%A4%A7%E5%AD%A6%E7%94%9F%E5%AF%92%E5%81%87%E5%9B%9E%E8%AE%BF%E6%AF%8D%E6%A0%A1%E6%8B%9B%E7%94%9F%E5%AE%A3%E4%BC%A0%E4%B8%93%E9%A1%B9%E5%AE%9E%E8%B7%B5%E9%98%9F%E4%BC%8D%E5%AE%A1%E6%A0%B8%E7%BB%93%E6%9E%9C%E7%9A%84%E5%85%AC%E7%A4%BA.html" target="_blank" class="title-link">关于2026年大学生寒假回访母校招生宣传专项实践队伍审核结果的公示</a>
+                                </td>
+                            </tr>
+                        
+                            <tr>
+                                <td class="datetime-col" data-timestamp="1766391932000">
+                                    2025-12-22 <span style="opacity: 0.6; margin-left: 4px;">16:25:32</span>
+                                </td>
+                                <td class="title-col">
+                                    <a href="HTML/2025-12-22-16-25-32-%E5%8A%9E%E5%AD%A6%E6%95%B0%E6%8D%AE.html" target="_blank" class="title-link">办学数据</a>
+                                </td>
+                            </tr>
+                        
+                            <tr>
+                                <td class="datetime-col" data-timestamp="1766331555000">
+                                    2025-12-21 <span style="opacity: 0.6; margin-left: 4px;">23:39:15</span>
+                                </td>
+                                <td class="title-col">
+                                    <a href="HTML/2025-12-21-23-39-15-%E5%85%B3%E4%BA%8E%E6%88%91%E6%A0%A12025%E5%B9%B4%E5%BA%A6%E5%A4%A7%E5%AD%A6%E7%94%9F%E5%88%9B%E6%96%B0%E8%AE%AD%E7%BB%83%E8%AE%A1%E5%88%92%E9%A1%B9%E7%9B%AE%E7%BB%93%E9%A2%98%E9%AA%8C%E6%94%B6%E7%BB%93%E6%9E%9C%E7%9A%84%E5%85%AC%E7%A4%BA.html" target="_blank" class="title-link">关于我校2025年度大学生创新训练计划项目结题验收结果的公示</a>
+                                </td>
+                            </tr>
+                        
+                            <tr>
+                                <td class="datetime-col" data-timestamp="1766319617000">
+                                    2025-12-21 <span style="opacity: 0.6; margin-left: 4px;">20:20:17</span>
+                                </td>
+                                <td class="title-col">
+                                    <a href="HTML/2025-12-21-20-20-17-%E6%B0%B4%E5%88%A9%E4%B8%8E%E5%9C%9F%E6%9C%A8%E5%B7%A5%E7%A8%8B%E5%AD%A6%E9%99%A2%E5%85%B3%E4%BA%8E%E7%BB%99%E4%BA%88%E6%9D%8E%E7%85%9C%E7%AD%8929%E5%90%8D%E5%AD%A6%E7%94%9F%E9%80%9A%E6%8A%A5%E6%89%B9%E8%AF%84%E7%9A%84%E5%86%B3%E5%AE%9A.html" target="_blank" class="title-link">水利与土木工程学院关于给予李煜等29名学生通报批评的决定</a>
+                                </td>
+                            </tr>
+                        
+                            <tr>
+                                <td class="datetime-col" data-timestamp="1766319216000">
+                                    2025-12-21 <span style="opacity: 0.6; margin-left: 4px;">20:13:36</span>
+                                </td>
+                                <td class="title-col">
+                                    <a href="HTML/2025-12-21-20-13-36-%E5%85%B3%E4%BA%8E2025%E5%B9%B4%E2%80%9C%E4%B8%81%E9%A2%96%E6%9D%AF%E2%80%9D%E5%A4%A7%E5%AD%A6%E7%94%9F%E5%88%9B%E4%B8%9A%E8%AE%A1%E5%88%92%E7%AB%9E%E8%B5%9B%E9%99%A2%E5%86%85%E9%80%89%E6%8B%94%E8%B5%9B%E8%AF%84%E9%80%89%E7%BB%93%E6%9E%9C%E7%9A%84%E5%85%AC%E7%A4%BA.html" target="_blank" class="title-link">关于2025年“丁颖杯”大学生创业计划竞赛院内选拔赛评选结果的公示</a>
+                                </td>
+                            </tr>
+                        
+                            <tr>
+                                <td class="datetime-col" data-timestamp="1766319149000">
+                                    2025-12-21 <span style="opacity: 0.6; margin-left: 4px;">20:12:29</span>
+                                </td>
+                                <td class="title-col">
+                                    <a href="HTML/2025-12-21-20-12-29-%E5%85%B3%E4%BA%8E2025%E5%B9%B4%E5%A4%A7%E5%AD%A6%E7%94%9F%E5%88%9B%E6%96%B0%E5%88%9B%E4%B8%9A%E8%AE%AD%E7%BB%83%E8%AE%A1%E5%88%92%E9%A1%B9%E7%9B%AE%E7%BB%93%E9%A2%98%E7%AD%94%E8%BE%A9%E7%BB%93%E6%9E%9C%E7%9A%84%E5%85%AC%E7%A4%BA.html" target="_blank" class="title-link">关于2025年大学生创新创业训练计划项目结题答辩结果的公示</a>
+                                </td>
+                            </tr>
+                        
+                            <tr>
+                                <td class="datetime-col" data-timestamp="1766319116000">
+                                    2025-12-21 <span style="opacity: 0.6; margin-left: 4px;">20:11:56</span>
+                                </td>
+                                <td class="title-col">
+                                    <a href="HTML/2025-12-21-20-11-56-%E5%85%B3%E4%BA%8E%E9%92%9F%E9%94%A6%E5%AE%87%EF%BC%88%E7%AD%89%EF%BC%89%E5%90%8C%E5%BF%97%E6%8B%9F%E5%90%B8%E6%94%B6%E4%B8%BA%E4%B8%AD%E5%85%B1%E9%A2%84%E5%A4%87%E5%85%9A%E5%91%98%E7%9A%84%E5%85%AC%E7%A4%BA.html" target="_blank" class="title-link">关于钟锦宇（等）同志拟吸收为中共预备党员的公示</a>
+                                </td>
+                            </tr>
+                        
+                            <tr>
+                                <td class="datetime-col" data-timestamp="1766319071000">
+                                    2025-12-21 <span style="opacity: 0.6; margin-left: 4px;">20:11:11</span>
+                                </td>
+                                <td class="title-col">
+                                    <a href="HTML/2025-12-21-20-11-11-%E5%85%B3%E4%BA%8E%E8%AE%B8%E6%B9%9B%E7%90%A6%E7%AD%8933%E5%90%8D%E5%85%A5%E5%9B%A2%E7%A7%AF%E6%9E%81%E5%88%86%E5%AD%90%E6%8B%9F%E7%A1%AE%E5%AE%9A%E4%B8%BA%E5%85%A5%E5%9B%A2%E5%8F%91%E5%B1%95%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%85%AC%E7%A4%BA.html" target="_blank" class="title-link">关于许湛琦等33名入团积极分子拟确定为入团发展对象的公示</a>
+                                </td>
+                            </tr>
+                        
+                    </tbody>
+                </table>
+            
+        </div>
     </div>
 
     <script>
@@ -250,9 +339,8 @@
             const table = document.getElementById("fileTable");
             let rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
             switching = true;
-            dir = sortDirection[n] ? "asc" : "desc"; // Toggle direction
+            dir = sortDirection[n] ? "asc" : "desc"; 
             
-            // Reset headers
             const headers = table.getElementsByTagName("th");
             for (let h of headers) {
                 h.classList.remove("sorted-asc", "sorted-desc");
@@ -270,7 +358,7 @@
                     
                     let xVal, yVal;
 
-                    if (n === 0) { // Date column, use timestamp data attribute
+                    if (n === 0) { 
                         xVal = Number(x.getAttribute('data-timestamp'));
                         yVal = Number(y.getAttribute('data-timestamp'));
                     } else {
@@ -297,11 +385,8 @@
                     switchcount++;
                 } else {
                     if (switchcount == 0 && dir == "asc") {
-                        // If no switching has been done AND the direction is "asc",
-                        // set the direction to "desc" and run the while loop again.
-                        // However, we handle toggle via state, so this block might be redundant 
-                        // but good for initial sort logic if we didn't track state.
-                        // With our toggle logic, we just update the state below.
+                        // dir = "desc";
+                        // switching = true;
                     }
                 }
             }

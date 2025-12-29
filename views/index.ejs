@@ -4,158 +4,248 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>网页存档索引</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-color: #f3f4f6;
+            --text-color: #1f2937;
+            --text-secondary: #6b7280;
+            --border-color: #e5e7eb;
+            --card-bg: #ffffff;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f5f7fa;
-            color: #333;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             margin: 0;
             padding: 20px;
+            line-height: 1.5;
         }
+
         .container {
             max-width: 1000px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin: 40px auto;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
         }
+
+        .header {
+            padding: 32px 40px;
+            border-bottom: 1px solid var(--border-color);
+            background: linear-gradient(to right, #ffffff, #f9fafb);
+        }
+
         h1 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 20px;
+            margin: 0;
+            color: #111827;
+            font-size: 1.5rem;
+            font-weight: 600;
         }
+
+        .subtitle {
+            margin-top: 8px;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
         .controls {
+            padding: 24px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 16px;
+            background-color: #ffffff;
         }
-        .search-box {
+
+        .search-wrapper {
+            position: relative;
             flex-grow: 1;
             max-width: 400px;
-            position: relative;
         }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            pointer-events: none;
+        }
+
         .search-box input {
             width: 100%;
-            padding: 10px 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 1rem;
-            box-sizing: border-box; /* Ensure padding doesn't affect width */
-        }
-        .search-box input:focus {
+            padding: 10px 16px 10px 40px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            transition: all 0.2s;
             outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+            color: var(--text-color);
+            background-color: #f9fafb;
         }
+
+        .search-box input:focus {
+            background-color: #fff;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .stats {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            background-color: #f3f4f6;
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
-        }
-        th, td {
-            padding: 12px 15px;
             text-align: left;
-            border-bottom: 1px solid #e1e1e1;
         }
+
         th {
-            background-color: #f8f9fa;
-            font-weight: 600;
-            color: #555;
+            padding: 16px 24px;
+            background-color: #f9fafb;
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.75rem;
             text-transform: uppercase;
-            font-size: 0.85rem;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.05em;
             cursor: pointer;
             user-select: none;
+            border-bottom: 1px solid var(--border-color);
             transition: background-color 0.2s;
         }
+
         th:hover {
-            background-color: #e9ecef;
+            background-color: #f3f4f6;
+            color: #374151;
         }
-        th.sorted-asc::after {
-            content: " ▲";
-            font-size: 0.8em;
+
+        th.sorted-asc::after { content: " ↑"; color: var(--primary-color); }
+        th.sorted-desc::after { content: " ↓"; color: var(--primary-color); }
+
+        td {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.875rem;
         }
-        th.sorted-desc::after {
-            content: " ▼";
-            font-size: 0.8em;
+
+        tr:last-child td {
+            border-bottom: none;
         }
-        tr:hover {
-            background-color: #f1f3f5;
+
+        tr:hover td {
+            background-color: #f9fafb;
         }
-        a {
-            text-decoration: none;
-            color: #3498db;
-            font-weight: 500;
-            transition: color 0.2s;
-            display: block; /* Make the whole cell clickable area for the link text */
-        }
-        a:hover {
-            color: #2980b9;
-            text-decoration: underline;
-        }
+
         .datetime-col {
-            width: 180px;
-            color: #7f8c8d;
+            width: 200px;
+            color: var(--text-secondary);
             font-variant-numeric: tabular-nums;
             white-space: nowrap;
         }
-        .title-col {
-            /* Takes remaining space */
+
+        .title-link {
+            text-decoration: none;
+            color: #111827;
+            font-weight: 500;
+            display: block;
+            transition: color 0.2s;
         }
+
+        .title-link:hover {
+            color: var(--primary-color);
+        }
+
         .empty-state {
             text-align: center;
-            padding: 40px;
-            color: #7f8c8d;
+            padding: 60px 20px;
+            color: var(--text-secondary);
         }
-        .hidden {
-            display: none;
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            display: block;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 640px) {
+            body { padding: 10px; }
+            .container { margin: 10px auto; }
+            .header, .controls { padding: 20px; }
+            th, td { padding: 12px 16px; }
+            .datetime-col { width: auto; font-size: 0.75rem; display: block; padding-bottom: 4px; border-bottom: none; }
+            td.title-col { padding-top: 4px; display: block; border-top: none; }
+            tr { border-bottom: 1px solid var(--border-color); }
+            thead { display: none; } /* Hide headers on mobile for card-like view */
+            td { border: none; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>网页存档索引</h1>
+        <div class="header">
+            <h1>网页存档索引</h1>
+            <div class="subtitle">自动归档与检索系统</div>
+        </div>
         
         <div class="controls">
-            <div class="search-box">
+            <div class="search-wrapper search-box">
+                <svg class="search-icon" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 <input type="text" id="searchInput" placeholder="搜索标题或日期..." onkeyup="filterTable()">
             </div>
-            <div style="color: #7f8c8d; font-size: 0.9rem;">
+            <div class="stats">
                 共 <span id="fileCount"><%= files.length %></span> 个文件
             </div>
         </div>
 
-        <% if (files.length > 0) { %>
-            <table id="fileTable">
-                <thead>
-                    <tr>
-                        <th class="datetime-col" onclick="sortTable(0)">日期 / 时间</th>
-                        <th class="title-col" onclick="sortTable(1)">标题</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% files.forEach(file => { %>
+        <div class="table-container">
+            <% if (files.length > 0) { %>
+                <table id="fileTable">
+                    <thead>
                         <tr>
-                            <td class="datetime-col" data-timestamp="<%= file.timestamp %>">
-                                <%= file.date %> <%= file.time %>
-                            </td>
-                            <td class="title-col">
-                                <a href="HTML/<%= file.encodedFilename %>" target="_blank"><%= file.title %></a>
-                            </td>
+                            <th class="datetime-col" onclick="sortTable(0)">日期 / 时间</th>
+                            <th class="title-col" onclick="sortTable(1)">标题</th>
                         </tr>
-                    <% }); %>
-                </tbody>
-            </table>
-        <% } else { %>
-            <div class="empty-state">
-                <p>目录下没有找到 HTML 文件。</p>
-                <p>请将文件放入项目根目录的 <code>HTML</code> 文件夹中。</p>
-            </div>
-        <% } %>
+                    </thead>
+                    <tbody>
+                        <% files.forEach(file => { %>
+                            <tr>
+                                <td class="datetime-col" data-timestamp="<%= file.timestamp %>">
+                                    <%= file.date %> <span style="opacity: 0.6; margin-left: 4px;"><%= file.time %></span>
+                                </td>
+                                <td class="title-col">
+                                    <a href="HTML/<%= file.encodedFilename %>" target="_blank" class="title-link"><%= file.title %></a>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            <% } else { %>
+                <div class="empty-state">
+                    <span class="empty-icon">📂</span>
+                    <p>目录下没有找到 HTML 文件。</p>
+                    <p style="font-size: 0.875rem;">请将文件放入项目根目录的 <code>HTML</code> 文件夹中。</p>
+                </div>
+            <% } %>
+        </div>
     </div>
 
     <script>
@@ -192,9 +282,8 @@
             const table = document.getElementById("fileTable");
             let rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
             switching = true;
-            dir = sortDirection[n] ? "asc" : "desc"; // Toggle direction
+            dir = sortDirection[n] ? "asc" : "desc"; 
             
-            // Reset headers
             const headers = table.getElementsByTagName("th");
             for (let h of headers) {
                 h.classList.remove("sorted-asc", "sorted-desc");
@@ -212,7 +301,7 @@
                     
                     let xVal, yVal;
 
-                    if (n === 0) { // Date column, use timestamp data attribute
+                    if (n === 0) { 
                         xVal = Number(x.getAttribute('data-timestamp'));
                         yVal = Number(y.getAttribute('data-timestamp'));
                     } else {
@@ -239,11 +328,8 @@
                     switchcount++;
                 } else {
                     if (switchcount == 0 && dir == "asc") {
-                        // If no switching has been done AND the direction is "asc",
-                        // set the direction to "desc" and run the while loop again.
-                        // However, we handle toggle via state, so this block might be redundant 
-                        // but good for initial sort logic if we didn't track state.
-                        // With our toggle logic, we just update the state below.
+                        // dir = "desc";
+                        // switching = true;
                     }
                 }
             }
